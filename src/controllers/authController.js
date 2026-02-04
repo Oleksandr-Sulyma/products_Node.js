@@ -22,7 +22,7 @@ export const registerUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
-  const user = await User.findOne({email});
+  const user = await User.findOne({ email });
   if (!user) {
     throw createHttpError(401, 'Invalid password or email');
   }
@@ -32,11 +32,23 @@ export const loginUser = async (req, res) => {
     throw createHttpError(401, 'Invalid password or email');
   }
 
-  await Session.deleteOne({userId: user._id});
+  await Session.deleteOne({ userId: user._id });
 
   const userSession = await createSession(user._id);
 
   setSessionCookies(res, userSession);
 
   res.status(200).json(user);
+};
+
+export const logoutUser = async (req, res) => {
+  const { sessionId } = req.cookies;
+  if (sessionId) {
+    await Session.deleteOne({ _id: sessionId });
+  }
+  res.clearCookie('sessionId');
+  res.clearCookie('accessToken');
+  res.clearCookie('refreshToken');
+
+  res.status(204).send();
 };
