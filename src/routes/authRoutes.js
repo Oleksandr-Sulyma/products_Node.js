@@ -5,6 +5,7 @@ import {
   logoutUser,
   refreshUserSession,
 } from '../controllers/authController.js';
+
 import { celebrate } from 'celebrate';
 import {
   registerUserSchema,
